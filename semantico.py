@@ -1,10 +1,12 @@
-import ply.yacc as yacc
 from lexico import tokens  # Importar tokens do arquivo lexer
+import ply.yacc as yacc
 
+# Definição das precedências
 precedence = (
-    ('left', 'PLUS', 'MINUS'),
+    ('right', 'POWER'),  # Exponenciação à direita
+    ('right', 'ROOT'),    # Radiciação à direita
     ('left', 'TIMES', 'DIVIDE'),
-    ('right', 'POWER', 'ROOT'),
+    ('left', 'PLUS', 'MINUS'),
 )
 
 # Definição das regras da gramática
@@ -13,37 +15,35 @@ def p_s(p):
     p[0] = p[1]
     print("Resultado:", p[0])
 
-def p_e_plus(p):
-    'E : E PLUS T'
-    p[0] = p[1] + p[3]
+def p_e(p):
+    '''E : E PLUS T
+         | E MINUS T
+         | T'''
+    if len(p) == 4:
+        p[0] = p[1] + p[3] if p[2] == '+' else p[1] - p[3]
+    else:
+        p[0] = p[1]
 
-def p_e_minus(p):
-    'E : E MINUS T'
-    p[0] = p[1] - p[3]
+def p_t(p):
+    '''T : T TIMES F
+         | T DIVIDE F
+         | F'''
+    if len(p) == 4:
+        p[0] = p[1] * p[3] if p[2] == '*' else p[1] / p[3]
+    else:
+        p[0] = p[1]
 
-def p_t_times(p):
-    'T : T TIMES F'
-    p[0] = p[1] * p[3]
-
-def p_t_divide(p):
-    'T : T DIVIDE F'
-    p[0] = p[1] / p[3]
-
-def p_t_power(p):
-    'T : T POWER F'
-    p[0] = p[1] ** p[3]
-
-def p_f_root(p):
-    'F : ROOT F'
-    p[0] = p[2] ** 0.5  # Radiciação
-
-def p_f_parens(p):
-    'F : LPAR E RPAR'
-    p[0] = p[2]
-
-def p_f_number(p):
-    'F : NUMBER'
-    p[0] = p[1]
+def p_f(p):
+    '''F : NUMBER
+         | LPAR E RPAR
+         | F POWER F
+         | F ROOT F'''
+    if len(p) == 4 and p[2] == '^':  # Exponenciação
+        p[0] = p[1] ** p[3]
+    elif len(p) == 4 and p[2] == '^^':  # Radiciação
+        p[0] = p[1] ** (1 / p[3])  # Raiz enésima (raiz quadrada se p[3] == 2)
+    else:
+        p[0] = p[1]  # Número ou expressão entre parênteses
 
 def p_error(p):
     if p:
@@ -54,6 +54,7 @@ def p_error(p):
 # Criação do parser
 parser = yacc.yacc()
 
+# Loop para entrada do usuário
 while True:
     try:
         s = input('Calculadora > ')
@@ -62,3 +63,4 @@ while True:
         parser.parse(s)
     except EOFError:
         break
+

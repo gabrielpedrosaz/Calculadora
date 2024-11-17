@@ -4,32 +4,433 @@ Grammar
 
 Rule 0     S' -> S
 Rule 1     S -> E
-Rule 2     E -> E PLUS T
-Rule 3     E -> E MINUS T
-Rule 4     T -> T TIMES F
-Rule 5     T -> T DIVIDE F
-Rule 6     T -> F POWER T
-Rule 7     F -> ROOT F
-Rule 8     F -> LPAR E RPAR
+Rule 2     S -> VAR EQUALS E
+Rule 3     E -> E PLUS T
+Rule 4     E -> E MINUS T
+Rule 5     E -> T
+Rule 6     T -> T TIMES F
+Rule 7     T -> T DIVIDE F
+Rule 8     T -> F
 Rule 9     F -> NUMBER
+Rule 10    F -> VAR
+Rule 11    F -> LPAR E RPAR
+Rule 12    F -> F POWER F
+Rule 13    F -> F ROOT F
 
 Terminals, with rules where they appear
 
-DIVIDE               : 5
-LPAR                 : 8
-MINUS                : 3
+DIVIDE               : 7
+EQUALS               : 2
+LPAR                 : 11
+MINUS                : 4
 NUMBER               : 9
-PLUS                 : 2
-POWER                : 6
-ROOT                 : 7
-RPAR                 : 8
-TIMES                : 4
+PLUS                 : 3
+POWER                : 12
+ROOT                 : 13
+RPAR                 : 11
+TIMES                : 6
+VAR                  : 2 10
 error                : 
 
 Nonterminals, with rules where they appear
 
-E                    : 1 2 3 8
-F                    : 4 5 6 7
+E                    : 1 2 3 4 11
+F                    : 6 7 8 12 12 13 13
 S                    : 0
-T                    : 2 3 4 5 6
+T                    : 3 4 5 6 7
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . S
+    (1) S -> . E
+    (2) S -> . VAR EQUALS E
+    (3) E -> . E PLUS T
+    (4) E -> . E MINUS T
+    (5) E -> . T
+    (6) T -> . T TIMES F
+    (7) T -> . T DIVIDE F
+    (8) T -> . F
+    (9) F -> . NUMBER
+    (10) F -> . VAR
+    (11) F -> . LPAR E RPAR
+    (12) F -> . F POWER F
+    (13) F -> . F ROOT F
+
+    VAR             shift and go to state 3
+    NUMBER          shift and go to state 6
+    LPAR            shift and go to state 7
+
+    S                              shift and go to state 1
+    E                              shift and go to state 2
+    T                              shift and go to state 4
+    F                              shift and go to state 5
+
+state 1
+
+    (0) S' -> S .
+
+
+
+state 2
+
+    (1) S -> E .
+    (3) E -> E . PLUS T
+    (4) E -> E . MINUS T
+
+    $end            reduce using rule 1 (S -> E .)
+    PLUS            shift and go to state 8
+    MINUS           shift and go to state 9
+
+
+state 3
+
+    (2) S -> VAR . EQUALS E
+    (10) F -> VAR .
+
+    EQUALS          shift and go to state 10
+    POWER           reduce using rule 10 (F -> VAR .)
+    ROOT            reduce using rule 10 (F -> VAR .)
+    TIMES           reduce using rule 10 (F -> VAR .)
+    DIVIDE          reduce using rule 10 (F -> VAR .)
+    PLUS            reduce using rule 10 (F -> VAR .)
+    MINUS           reduce using rule 10 (F -> VAR .)
+    $end            reduce using rule 10 (F -> VAR .)
+
+
+state 4
+
+    (5) E -> T .
+    (6) T -> T . TIMES F
+    (7) T -> T . DIVIDE F
+
+    PLUS            reduce using rule 5 (E -> T .)
+    MINUS           reduce using rule 5 (E -> T .)
+    $end            reduce using rule 5 (E -> T .)
+    RPAR            reduce using rule 5 (E -> T .)
+    TIMES           shift and go to state 11
+    DIVIDE          shift and go to state 12
+
+
+state 5
+
+    (8) T -> F .
+    (12) F -> F . POWER F
+    (13) F -> F . ROOT F
+
+    TIMES           reduce using rule 8 (T -> F .)
+    DIVIDE          reduce using rule 8 (T -> F .)
+    PLUS            reduce using rule 8 (T -> F .)
+    MINUS           reduce using rule 8 (T -> F .)
+    $end            reduce using rule 8 (T -> F .)
+    RPAR            reduce using rule 8 (T -> F .)
+    POWER           shift and go to state 13
+    ROOT            shift and go to state 14
+
+
+state 6
+
+    (9) F -> NUMBER .
+
+    POWER           reduce using rule 9 (F -> NUMBER .)
+    ROOT            reduce using rule 9 (F -> NUMBER .)
+    TIMES           reduce using rule 9 (F -> NUMBER .)
+    DIVIDE          reduce using rule 9 (F -> NUMBER .)
+    PLUS            reduce using rule 9 (F -> NUMBER .)
+    MINUS           reduce using rule 9 (F -> NUMBER .)
+    $end            reduce using rule 9 (F -> NUMBER .)
+    RPAR            reduce using rule 9 (F -> NUMBER .)
+
+
+state 7
+
+    (11) F -> LPAR . E RPAR
+    (3) E -> . E PLUS T
+    (4) E -> . E MINUS T
+    (5) E -> . T
+    (6) T -> . T TIMES F
+    (7) T -> . T DIVIDE F
+    (8) T -> . F
+    (9) F -> . NUMBER
+    (10) F -> . VAR
+    (11) F -> . LPAR E RPAR
+    (12) F -> . F POWER F
+    (13) F -> . F ROOT F
+
+    NUMBER          shift and go to state 6
+    VAR             shift and go to state 16
+    LPAR            shift and go to state 7
+
+    E                              shift and go to state 15
+    T                              shift and go to state 4
+    F                              shift and go to state 5
+
+state 8
+
+    (3) E -> E PLUS . T
+    (6) T -> . T TIMES F
+    (7) T -> . T DIVIDE F
+    (8) T -> . F
+    (9) F -> . NUMBER
+    (10) F -> . VAR
+    (11) F -> . LPAR E RPAR
+    (12) F -> . F POWER F
+    (13) F -> . F ROOT F
+
+    NUMBER          shift and go to state 6
+    VAR             shift and go to state 16
+    LPAR            shift and go to state 7
+
+    T                              shift and go to state 17
+    F                              shift and go to state 5
+
+state 9
+
+    (4) E -> E MINUS . T
+    (6) T -> . T TIMES F
+    (7) T -> . T DIVIDE F
+    (8) T -> . F
+    (9) F -> . NUMBER
+    (10) F -> . VAR
+    (11) F -> . LPAR E RPAR
+    (12) F -> . F POWER F
+    (13) F -> . F ROOT F
+
+    NUMBER          shift and go to state 6
+    VAR             shift and go to state 16
+    LPAR            shift and go to state 7
+
+    T                              shift and go to state 18
+    F                              shift and go to state 5
+
+state 10
+
+    (2) S -> VAR EQUALS . E
+    (3) E -> . E PLUS T
+    (4) E -> . E MINUS T
+    (5) E -> . T
+    (6) T -> . T TIMES F
+    (7) T -> . T DIVIDE F
+    (8) T -> . F
+    (9) F -> . NUMBER
+    (10) F -> . VAR
+    (11) F -> . LPAR E RPAR
+    (12) F -> . F POWER F
+    (13) F -> . F ROOT F
+
+    NUMBER          shift and go to state 6
+    VAR             shift and go to state 16
+    LPAR            shift and go to state 7
+
+    E                              shift and go to state 19
+    T                              shift and go to state 4
+    F                              shift and go to state 5
+
+state 11
+
+    (6) T -> T TIMES . F
+    (9) F -> . NUMBER
+    (10) F -> . VAR
+    (11) F -> . LPAR E RPAR
+    (12) F -> . F POWER F
+    (13) F -> . F ROOT F
+
+    NUMBER          shift and go to state 6
+    VAR             shift and go to state 16
+    LPAR            shift and go to state 7
+
+    F                              shift and go to state 20
+
+state 12
+
+    (7) T -> T DIVIDE . F
+    (9) F -> . NUMBER
+    (10) F -> . VAR
+    (11) F -> . LPAR E RPAR
+    (12) F -> . F POWER F
+    (13) F -> . F ROOT F
+
+    NUMBER          shift and go to state 6
+    VAR             shift and go to state 16
+    LPAR            shift and go to state 7
+
+    F                              shift and go to state 21
+
+state 13
+
+    (12) F -> F POWER . F
+    (9) F -> . NUMBER
+    (10) F -> . VAR
+    (11) F -> . LPAR E RPAR
+    (12) F -> . F POWER F
+    (13) F -> . F ROOT F
+
+    NUMBER          shift and go to state 6
+    VAR             shift and go to state 16
+    LPAR            shift and go to state 7
+
+    F                              shift and go to state 22
+
+state 14
+
+    (13) F -> F ROOT . F
+    (9) F -> . NUMBER
+    (10) F -> . VAR
+    (11) F -> . LPAR E RPAR
+    (12) F -> . F POWER F
+    (13) F -> . F ROOT F
+
+    NUMBER          shift and go to state 6
+    VAR             shift and go to state 16
+    LPAR            shift and go to state 7
+
+    F                              shift and go to state 23
+
+state 15
+
+    (11) F -> LPAR E . RPAR
+    (3) E -> E . PLUS T
+    (4) E -> E . MINUS T
+
+    RPAR            shift and go to state 24
+    PLUS            shift and go to state 8
+    MINUS           shift and go to state 9
+
+
+state 16
+
+    (10) F -> VAR .
+
+    POWER           reduce using rule 10 (F -> VAR .)
+    ROOT            reduce using rule 10 (F -> VAR .)
+    TIMES           reduce using rule 10 (F -> VAR .)
+    DIVIDE          reduce using rule 10 (F -> VAR .)
+    RPAR            reduce using rule 10 (F -> VAR .)
+    PLUS            reduce using rule 10 (F -> VAR .)
+    MINUS           reduce using rule 10 (F -> VAR .)
+    $end            reduce using rule 10 (F -> VAR .)
+
+
+state 17
+
+    (3) E -> E PLUS T .
+    (6) T -> T . TIMES F
+    (7) T -> T . DIVIDE F
+
+    PLUS            reduce using rule 3 (E -> E PLUS T .)
+    MINUS           reduce using rule 3 (E -> E PLUS T .)
+    $end            reduce using rule 3 (E -> E PLUS T .)
+    RPAR            reduce using rule 3 (E -> E PLUS T .)
+    TIMES           shift and go to state 11
+    DIVIDE          shift and go to state 12
+
+
+state 18
+
+    (4) E -> E MINUS T .
+    (6) T -> T . TIMES F
+    (7) T -> T . DIVIDE F
+
+    PLUS            reduce using rule 4 (E -> E MINUS T .)
+    MINUS           reduce using rule 4 (E -> E MINUS T .)
+    $end            reduce using rule 4 (E -> E MINUS T .)
+    RPAR            reduce using rule 4 (E -> E MINUS T .)
+    TIMES           shift and go to state 11
+    DIVIDE          shift and go to state 12
+
+
+state 19
+
+    (2) S -> VAR EQUALS E .
+    (3) E -> E . PLUS T
+    (4) E -> E . MINUS T
+
+    $end            reduce using rule 2 (S -> VAR EQUALS E .)
+    PLUS            shift and go to state 8
+    MINUS           shift and go to state 9
+
+
+state 20
+
+    (6) T -> T TIMES F .
+    (12) F -> F . POWER F
+    (13) F -> F . ROOT F
+
+    TIMES           reduce using rule 6 (T -> T TIMES F .)
+    DIVIDE          reduce using rule 6 (T -> T TIMES F .)
+    PLUS            reduce using rule 6 (T -> T TIMES F .)
+    MINUS           reduce using rule 6 (T -> T TIMES F .)
+    $end            reduce using rule 6 (T -> T TIMES F .)
+    RPAR            reduce using rule 6 (T -> T TIMES F .)
+    POWER           shift and go to state 13
+    ROOT            shift and go to state 14
+
+
+state 21
+
+    (7) T -> T DIVIDE F .
+    (12) F -> F . POWER F
+    (13) F -> F . ROOT F
+
+    TIMES           reduce using rule 7 (T -> T DIVIDE F .)
+    DIVIDE          reduce using rule 7 (T -> T DIVIDE F .)
+    PLUS            reduce using rule 7 (T -> T DIVIDE F .)
+    MINUS           reduce using rule 7 (T -> T DIVIDE F .)
+    $end            reduce using rule 7 (T -> T DIVIDE F .)
+    RPAR            reduce using rule 7 (T -> T DIVIDE F .)
+    POWER           shift and go to state 13
+    ROOT            shift and go to state 14
+
+
+state 22
+
+    (12) F -> F POWER F .
+    (12) F -> F . POWER F
+    (13) F -> F . ROOT F
+
+    TIMES           reduce using rule 12 (F -> F POWER F .)
+    DIVIDE          reduce using rule 12 (F -> F POWER F .)
+    PLUS            reduce using rule 12 (F -> F POWER F .)
+    MINUS           reduce using rule 12 (F -> F POWER F .)
+    $end            reduce using rule 12 (F -> F POWER F .)
+    RPAR            reduce using rule 12 (F -> F POWER F .)
+    POWER           shift and go to state 13
+    ROOT            shift and go to state 14
+
+  ! POWER           [ reduce using rule 12 (F -> F POWER F .) ]
+  ! ROOT            [ reduce using rule 12 (F -> F POWER F .) ]
+
+
+state 23
+
+    (13) F -> F ROOT F .
+    (12) F -> F . POWER F
+    (13) F -> F . ROOT F
+
+    POWER           reduce using rule 13 (F -> F ROOT F .)
+    TIMES           reduce using rule 13 (F -> F ROOT F .)
+    DIVIDE          reduce using rule 13 (F -> F ROOT F .)
+    PLUS            reduce using rule 13 (F -> F ROOT F .)
+    MINUS           reduce using rule 13 (F -> F ROOT F .)
+    $end            reduce using rule 13 (F -> F ROOT F .)
+    RPAR            reduce using rule 13 (F -> F ROOT F .)
+    ROOT            shift and go to state 14
+
+  ! ROOT            [ reduce using rule 13 (F -> F ROOT F .) ]
+  ! POWER           [ shift and go to state 13 ]
+
+
+state 24
+
+    (11) F -> LPAR E RPAR .
+
+    POWER           reduce using rule 11 (F -> LPAR E RPAR .)
+    ROOT            reduce using rule 11 (F -> LPAR E RPAR .)
+    TIMES           reduce using rule 11 (F -> LPAR E RPAR .)
+    DIVIDE          reduce using rule 11 (F -> LPAR E RPAR .)
+    PLUS            reduce using rule 11 (F -> LPAR E RPAR .)
+    MINUS           reduce using rule 11 (F -> LPAR E RPAR .)
+    $end            reduce using rule 11 (F -> LPAR E RPAR .)
+    RPAR            reduce using rule 11 (F -> LPAR E RPAR .)
 
